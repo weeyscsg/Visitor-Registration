@@ -1,131 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Registration</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        div {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #367c39;
-        }
-
-        @media (max-width: 768px) {
-            form {
-                width: 100%;
-            }
-        }
-
-        .logo-container {
-            text-align: center; /* Center the logo */
-            margin-bottom: 20px; /* Add some space below the logo */
-        }
-
-        .logo {
-            max-width: 200px; /* Adjust the maximum width as needed */
-            height: auto; /* Maintain the aspect ratio */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Visitor Registration - DiGiNeX</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      margin: auto;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    img.logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    input[type="submit"] {
+      background: #00a9cc;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background: #008bb0;
+    }
+  </style>
 </head>
 <body>
-    <div class="logo-container">
-        <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
-    </div>
-    <h1>Visitor Registration</h1>
-    <form id="visitorForm">
-        <div>
-            <label for="visitorName">Visitor Name:</label>
-            <input type="text" id="visitorName" name="visitorName" required>
-        </div>
-        <div>
-            <label for="companyName">Company Name:</label>
-            <input type="text" id="companyName" name="companyName">
-        </div>
-        <div>
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title">
-        </div>
-        <button type="button" onclick="submitForm()">Submit</button>
+  <div class="container">
+    <img class="logo" src="diginex---cyan-1k.jpg" alt="DiGiNeX Logo">
+    <h2>Visitor Registration</h2>
+    <form action="https://script.google.com/macros/s/AKfycbyx9a0zO7XeC_jfi9YR1KclasVizRHmz7-lQ3BwiUcamrI4HKkznCjRDBZiPk4gzWaF3g/exec" method="post">
+      <input type="text" name="visitor" placeholder="Visitor Name" required><br>
+      <input type="text" name="company" placeholder="Company Name" required><br>
+      <input type="text" name="title" placeholder="Title" required><br>
+      <input type="submit" value="Submit">
     </form>
-
-    <script>
-        function submitForm() {
-            const form = document.getElementById('visitorForm');
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // IMPORTANT: Replace 'YOUR_APPS_SCRIPT_WEB_APP_URL' with the actual URL of your Google Apps Script Web App.
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbyx9a0zO7XeC_jfi9YR1KclasVizRHmz7-lQ3BwiUcamrI4HKkznCjRDBZiPk4gzWaF3g/exec';
-
-            fetch(scriptURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.text())
-            .then(result => {
-                alert(result); // Display a success or error message
-                form.reset(); // Optionally reset the form
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting the form.  Please check your internet connection and try again.');
-            });
-        }
-    </script>
+  </div>
 </body>
 </html>
