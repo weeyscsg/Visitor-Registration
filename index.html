@@ -1,92 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Visitor Registration</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      text-align: center;
-      padding: 40px;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      max-width: 500px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 10px;
-    }
-    img.logo {
-      max-width: 200px;
-      margin-bottom: 20px;
-    }
-    h2 {
-      color: #0099cc;
-    }
-    input[type="text"] {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    input[type="submit"] {
-      background-color: #0099cc;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #response {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #367c39;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                width: 100%;
+            }
+        }
+
+        .logo-container {
+            text-align: center; /* Center the logo */
+            margin-bottom: 20px; /* Add some space below the logo */
+        }
+
+        .logo {
+            max-width: 200px; /* Adjust the maximum width as needed */
+            height: auto; /* Maintain the aspect ratio */
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <img src="diginex---cyan-1k.jpg" alt="DigiNex Logo" class="logo">
-    <h2>Visitor Registration</h2>
-
-    <form id="visitor-form">
-      <input type="text" id="visitorName" name="visitorName" placeholder="Visitor Name" required><br>
-      <input type="text" id="companyName" name="companyName" placeholder="Company Name" required><br>
-      <input type="text" id="title" name="title" placeholder="Title" required><br>
-      <input type="submit" value="Submit">
+    <div class="logo-container">
+        <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
+    </div>
+    <h1>Visitor Registration</h1>
+    <form id="visitorForm">
+        <div>
+            <label for="visitorName">Visitor Name:</label>
+            <input type="text" id="visitorName" name="visitorName" required>
+        </div>
+        <div>
+            <label for="companyName">Company Name:</label>
+            <input type="text" id="companyName" name="companyName">
+        </div>
+        <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title">
+        </div>
+        <button type="button" onclick="submitForm()">Submit</button>
     </form>
 
-    <p id="response"></p>
-  </div>
+    <script>
+        function submitForm() {
+            const form = document.getElementById('visitorForm');
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
 
-  <script>
-    const form = document.getElementById('visitor-form');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+            // IMPORTANT: Replace 'YOUR_APPS_SCRIPT_WEB_APP_URL' with the actual URL of your Google Apps Script Web App.
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyx9a0zO7XeC_jfi9YR1KclasVizRHmz7-lQ3BwiUcamrI4HKkznCjRDBZiPk4gzWaF3g/exec';
 
-      const data = {
-        visitorName: document.getElementById("visitorName").value,
-        companyName: document.getElementById("companyName").value,
-        title: document.getElementById("title").value
-      };
-
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwHFCGlyyv7UOf4hxeo48I1mpzYRTbEO12G03R_xmgxqw2nVgQ0Jm_lwhD1dLVEm4RKxQ/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
+            fetch(scriptURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result); // Display a success or error message
+                form.reset(); // Optionally reset the form
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form.  Please check your internet connection and try again.');
+            });
         }
-      });
-
-      if (response.ok) {
-        document.getElementById("response").innerText = "Submitted successfully!";
-        form.reset();
-      } else {
-        document.getElementById("response").innerText = "Submission failed.";
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
