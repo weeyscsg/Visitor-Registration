@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #f4f4f4;
       text-align: center;
       padding: 40px;
     }
@@ -18,75 +18,102 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       border-radius: 10px;
     }
-    input, button {
+    img.logo {
+      max-width: 220px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #0099cc;
+    }
+    input, textarea {
       width: 90%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
-    video, canvas {
-      width: 100%;
-      max-height: 300px;
-      border-radius: 10px;
+    button {
+      padding: 10px 30px;
+      background-color: #0099cc;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    img.logo {
-      max-width: 250px;
-      margin-bottom: 20px;
+    #video, #canvas {
+      margin-top: 20px;
+      max-width: 100%;
+    }
+    #canvas {
+      display: none;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Company Logo -->
-    <img class="logo" src="https://weeyscsg.github.io/Visitor-Registration/diginex---cyan-1k.jpg" alt="DigiNeX Logo">
-
+    <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
     <h2>Visitor Registration</h2>
-    <input type="text" id="name" placeholder="Visitor Name" required>
-    <input type="text" id="company" placeholder="Company Name" required>
-    <input type="text" id="title" placeholder="Title" required>
-
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button onclick="takeSnapshot()">Take Photo</button>
-    <button onclick="submitForm()">Submit</button>
+    <input type="text" id="name" placeholder="Visitor Name" required><br>
+    <input type="text" id="company" placeholder="Company Name" required><br>
+    <input type="text" id="title" placeholder="Title" required><br>
+    <input type="text" id="phone" placeholder="Phone Number" required><br>
+    <input type="email" id="email" placeholder="Email Address" required><br>
+    <textarea id="product" placeholder="Product Interested" rows="3" required></textarea><br>
+    <button onclick="startCamera()">Capture Photo</button>
+    <button onclick="submitForm()" id="submitBtn" disabled>Submit</button><br>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
   </div>
 
   <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    let imageData = "";
+    let stream;
+    let capturedImage = "";
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => alert("Camera access denied!"));
+    async function startCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.getElementById('video');
+      video.srcObject = stream;
+      video.style.display = 'block';
+      document.getElementById('submitBtn').disabled = false;
 
-    function takeSnapshot() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0);
-      imageData = canvas.toDataURL("image/jpeg");
-      alert("Photo captured!");
+      setTimeout(() => {
+        const canvas = document.getElementById('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        capturedImage = canvas.toDataURL("image/jpeg");
+        canvas.style.display = 'block';
+        video.style.display = 'none';
+        stream.getTracks().forEach(track => track.stop());
+      }, 3000);
     }
 
-    function submitForm() {
-      const name = document.getElementById('name').value;
-      const company = document.getElementById('company').value;
-      const title = document.getElementById('title').value;
+    async function submitForm() {
+      const name = document.getElementById("name").value.trim();
+      const company = document.getElementById("company").value.trim();
+      const title = document.getElementById("title").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const product = document.getElementById("product").value.trim();
 
-      if (!name || !company || !title || !imageData) {
-        alert("Please fill all fields and take a photo.");
+      if (!name || !company || !title || !phone || !email || !product || !capturedImage) {
+        alert("Please fill all fields and capture a photo.");
         return;
       }
 
-      fetch("https://script.google.com/macros/s/AKfycbzgbMo-Opo4fyyJTbUVtS7dJTLd1W-y_y-r7Zw31_144_D3jYMJjdyrgHhviAIT7nZyiA/exec", {
+      const data = { name, company, title, phone, email, product, image: capturedImage };
+
+      await fetch("https://script.google.com/macros/s/AKfycbzgbMo-Opo4fyyJTbUVtS7dJTLd1W-y_y-r7Zw31_144_D3jYMJjdyrgHhviAIT7nZyiA/exec", {
         method: "POST",
-        body: JSON.stringify({ name, company, title, image: imageData })
-      })
-      .then(res => res.text())
-      .then(msg => alert(msg))
-      .catch(err => alert("Error: " + err));
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      alert("Registration submitted!");
+      document.getElementById("submitBtn").disabled = true;
     }
   </script>
 </body>
