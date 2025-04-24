@@ -108,7 +108,7 @@
       const data = { name, company, title, phone, email, product, image: capturedImage };
 
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzgbMo-Opo4fyyJTbUVtS7dJTLd1W-y_y-r7Zw31_144_D3jYMJjdyrgHhviAIT7nZyiA/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzJ--QpcMHAp3BCylekK3BeU6A5HPb3vcu8kEpysfr-4OqmGICBTFWz-rdWHICNNn5jkw/exec", {
           method: "POST",
           body: JSON.stringify(data),
           headers: { "Content-Type": "application/json" }
