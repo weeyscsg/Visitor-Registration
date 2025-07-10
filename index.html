@@ -106,16 +106,42 @@
     function capturePhoto() {
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
 
-      canvas.getContext('2d').drawImage(video, 0, 0);
+      // Calculate cropping area for portrait 3:4 ratio
+      const targetAspect = 3 / 4;
 
-      // Use JPEG with high quality for clarity
+      let cropWidth = videoWidth;
+      let cropHeight = cropWidth / targetAspect;
+
+      if (cropHeight > videoHeight) {
+        cropHeight = videoHeight;
+        cropWidth = cropHeight * targetAspect;
+      }
+
+      // Center the crop area
+      const cropX = (videoWidth - cropWidth) / 2;
+      const cropY = (videoHeight - cropHeight) / 2;
+
+      // Set final output resolution for 300 DPI: 600x800 px
+      const outputWidth = 600;
+      const outputHeight = 800;
+
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight,
+        0, 0, outputWidth, outputHeight
+      );
+
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("Captured resolution:", video.videoWidth + "x" + video.videoHeight);
+      console.log("Captured & cropped to 3:4 portrait:", outputWidth + "x" + outputHeight);
 
       canvas.style.display = 'block';
       video.style.display = 'none';
