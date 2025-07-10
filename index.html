@@ -1,54 +1,63 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visitor Registration</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
-      text-align: center;
-      padding: 40px;
+      padding: 20px;
+      margin: 0;
     }
     .container {
       background: white;
-      padding: 30px;
-      max-width: 500px;
+      padding: 20px;
+      max-width: 480px;
       margin: auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       border-radius: 10px;
     }
     img.logo {
-      max-width: 220px;
-      margin-bottom: 20px;
+      max-width: 200px;
+      margin-bottom: 15px;
     }
     h2 {
       color: #0099cc;
+      font-size: 1.4em;
+      margin-bottom: 20px;
     }
     input, textarea {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
       font-size: 16px;
+      box-sizing: border-box;
     }
     button {
-      padding: 10px 30px;
+      width: 100%;
+      padding: 15px;
       background-color: #0099cc;
       color: white;
-      font-size: 16px;
+      font-size: 18px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 8px 0;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
     #video, #canvas {
-      margin-top: 20px;
-      max-width: 100%;
+      margin-top: 15px;
+      width: 100%;
+      border-radius: 8px;
     }
     #canvas {
-      display: none;
       border: 1px solid #ccc;
     }
   </style>
@@ -57,16 +66,20 @@
   <div class="container">
     <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
     <h2>Visitor Registration</h2>
-    <input type="text" id="name" placeholder="Visitor Name" required><br>
-    <input type="text" id="company" placeholder="Company Name" required><br>
-    <input type="text" id="title" placeholder="Title" required><br>
-    <input type="text" id="phone" placeholder="Phone Number" required><br>
-    <input type="email" id="email" placeholder="Email Address" required><br>
-    <textarea id="product" placeholder="Product Interested" rows="3" required></textarea><br>
-    <button onclick="startCamera()">Capture Photo</button>
-    <button onclick="submitForm()" id="submitBtn" disabled>Submit</button><br>
-    <video id="video" autoplay></video>
-    <canvas id="canvas"></canvas>
+
+    <input type="text" id="name" placeholder="Visitor Name" required>
+    <input type="text" id="company" placeholder="Company Name" required>
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="text" id="phone" placeholder="Phone Number" required>
+    <input type="email" id="email" placeholder="Email Address" required>
+    <textarea id="product" placeholder="Product Interested" rows="3" required></textarea>
+
+    <button onclick="startCamera()">📷 Start Camera</button>
+    <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
+    <button onclick="submitForm()" id="submitBtn" disabled>🚀 Submit</button>
+
+    <video id="video" autoplay playsinline style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
   </div>
 
   <script>
@@ -74,22 +87,45 @@
     let capturedImage = "";
 
     async function startCamera() {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 1280, min: 720 },
+          height: { ideal: 720, min: 480 }
+        }
+      });
+
       const video = document.getElementById('video');
       video.srcObject = stream;
       video.style.display = 'block';
-      document.getElementById('submitBtn').disabled = false;
 
-      setTimeout(() => {
-        const canvas = document.getElementById('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        capturedImage = canvas.toDataURL("image/jpeg");
-        canvas.style.display = 'block';
-        video.style.display = 'none';
+      document.getElementById('captureBtn').style.display = 'block';
+      document.getElementById('submitBtn').disabled = true;
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      canvas.getContext('2d').drawImage(video, 0, 0);
+
+      // Use JPEG with high quality for clarity
+      capturedImage = canvas.toDataURL("image/jpeg", 0.9);
+
+      console.log("Captured resolution:", video.videoWidth + "x" + video.videoHeight);
+
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+
+      if (stream) {
         stream.getTracks().forEach(track => track.stop());
-      }, 3000);
+      }
+
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('captureBtn').style.display = 'none';
     }
 
     async function submitForm() {
