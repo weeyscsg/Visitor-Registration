@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ full frame, comfortable */
+      object-fit: contain; /* ✅ Full sensor feed */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -130,7 +130,7 @@
 
   <script>
     // ✅ QR Key Check
-    const DAILY_KEY = "EMAX2025"; // Update daily!
+    const DAILY_KEY = "digi477188"; // Update daily!
     const urlParams = new URLSearchParams(window.location.search);
     const key = urlParams.get('key');
 
@@ -142,6 +142,7 @@
 
     let stream;
     let capturedImage = "";
+    let refreshWarningTimer;
 
     async function startCamera() {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -175,7 +176,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ 4:3 crop
+      // ✅ 4:3 crop math
       const targetAspect = 3 / 4;
       let cropWidth = videoWidth;
       let cropHeight = cropWidth / targetAspect;
@@ -188,7 +189,7 @@
       const cropX = (videoWidth - cropWidth) / 2;
       const cropY = (videoHeight - cropHeight) / 2;
 
-      const outputWidth = 1200;  // ✅ High-res output
+      const outputWidth = 1200;
       const outputHeight = 1600;
 
       canvas.width = outputWidth;
@@ -246,10 +247,19 @@
         const result = await response.text();
         alert("Submitted: " + result);
 
-        // ✅ Lock it down after submit!
+        // ✅ Lock buttons
         document.getElementById("submitBtn").disabled = true;
         document.getElementById("captureBtn").disabled = true;
         document.getElementById("startBtn").disabled = true;
+
+        // ✅ Add refresh warning for 30s after submit
+        window.onbeforeunload = function() {
+          return "Please wait — your form is processing.";
+        };
+        refreshWarningTimer = setTimeout(() => {
+          window.onbeforeunload = null;
+          console.log("✅ Refresh warning cleared after 30s");
+        }, 30000);
 
       } catch (error) {
         alert("Error: " + error.message);
