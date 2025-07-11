@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ full sensor frame, no forced crop */
+      object-fit: contain; /* ✅ shows full frame */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -114,7 +114,7 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- Clean Preview -->
+    <!-- Preview -->
     <div class="preview-wrapper">
       <div class="video-wrapper" id="videoWrapper" style="display:none;">
         <video id="video" autoplay playsinline></video>
@@ -175,7 +175,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ Crop to 4:3 output
+      // ✅ 4:3 crop
       const targetAspect = 3 / 4;
       let cropWidth = videoWidth;
       let cropHeight = cropWidth / targetAspect;
@@ -188,8 +188,8 @@
       const cropX = (videoWidth - cropWidth) / 2;
       const cropY = (videoHeight - cropHeight) / 2;
 
-      const outputWidth = 600;
-      const outputHeight = 800;
+      const outputWidth = 1200;  // ✅ Higher resolution
+      const outputHeight = 1600;
 
       canvas.width = outputWidth;
       canvas.height = outputHeight;
@@ -202,7 +202,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Clean contain preview, 4:3 output.");
+      console.log(`✅ Captured at ${outputWidth}x${outputHeight} (4:3)`);
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
