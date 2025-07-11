@@ -58,7 +58,7 @@
       border-radius: 8px;
     }
     #video {
-      transform: scaleX(-1); /* ✅ Mirror preview only */
+      transform: scaleX(-1); /* Mirror the live preview */
     }
     #canvas {
       border: 1px solid #ccc;
@@ -78,7 +78,7 @@
     <textarea id="product" placeholder="Product Interested" rows="3" required></textarea>
 
     <!-- Start Camera button -->
-    <button onclick="startCamera()">📷 Start Camera</button>
+    <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
     <!-- Camera preview -->
     <video id="video" autoplay playsinline style="display:none;"></video>
@@ -108,10 +108,16 @@
       video.srcObject = stream;
       video.style.display = 'block';
 
+      // ✅ Hide old canvas when retaking
+      document.getElementById('canvas').style.display = 'none';
+
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
 
-      // ✅ Scroll to end of page after preview shows
+      // ✅ Change Start Camera button text to Re-take Photo
+      document.getElementById('startBtn').innerText = "🔄 Re-take Photo";
+
+      // Smooth scroll to bottom after layout adjusts
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
@@ -145,7 +151,7 @@
       canvas.width = outputWidth;
       canvas.height = outputHeight;
 
-      // ✅ NO flip! Save normal — only preview is mirrored
+      // ✅ Do NOT flip — only preview is mirrored
       ctx.drawImage(
         video,
         cropX, cropY, cropWidth, cropHeight,
@@ -154,7 +160,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Saved photo: 600x800, normal orientation");
+      console.log("✅ Saved photo normal. Preview is mirrored only.");
 
       canvas.style.display = 'block';
       video.style.display = 'none';
