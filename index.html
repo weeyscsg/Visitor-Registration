@@ -58,11 +58,11 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 container aspect; actual video is true aspect inside */
+      padding-top: 75%; /* ✅ 4:3 aspect ratio */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
-      background: black; /* to show letterboxing if any */
+      background: black;
     }
     .video-wrapper video, .canvas-wrapper canvas {
       position: absolute;
@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ show entire sensor feed */
+      object-fit: cover; /* ✅ fills box, crops excess */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -114,7 +114,7 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- Combined preview wrapper -->
+    <!-- Preview -->
     <div class="preview-wrapper">
       <div class="video-wrapper" id="videoWrapper" style="display:none;">
         <video id="video" autoplay playsinline></video>
@@ -147,8 +147,8 @@
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: { ideal: 1920 }, // ✅ ask for max width for wider angle
-          height: { ideal: 1080 }
+          width: { ideal: 1280, min: 720 },
+          height: { ideal: 720, min: 480 }
         }
       });
 
@@ -175,15 +175,34 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ Keep true aspect ratio, save full frame
-      canvas.width = videoWidth;
-      canvas.height = videoHeight;
+      // ✅ Crop math for 4:3
+      const targetAspect = 3 / 4;
+      let cropWidth = videoWidth;
+      let cropHeight = cropWidth / targetAspect;
 
-      ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+      if (cropHeight > videoHeight) {
+        cropHeight = videoHeight;
+        cropWidth = cropHeight * targetAspect;
+      }
+
+      const cropX = (videoWidth - cropWidth) / 2;
+      const cropY = (videoHeight - cropHeight) / 2;
+
+      const outputWidth = 600;
+      const outputHeight = 800;
+
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight,
+        0, 0, outputWidth, outputHeight
+      );
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Captured true aspect ratio with max FOV.");
+      console.log("✅ Captured with perfect 4:3 framing.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
