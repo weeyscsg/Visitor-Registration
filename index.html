@@ -58,7 +58,7 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 box */
+      padding-top: 75%; /* 4:3 container aspect */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
@@ -72,13 +72,25 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ show full frame */
+      object-fit: contain; /* ✅ show full frame, less zoom */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
       object-fit: contain;
       border: 1px solid #ccc;
       background: white;
+    }
+    /* ✅ Head guide overlay */
+    .video-wrapper .head-guide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50%;
+      height: 65%;
+      transform: translate(-50%, -50%);
+      border: 3px dashed rgba(255, 255, 255, 0.8);
+      border-radius: 50% / 60%;
+      pointer-events: none;
     }
     #access-denied {
       max-width: 480px;
@@ -114,10 +126,11 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- Preview -->
+    <!-- Preview with head guide -->
     <div class="preview-wrapper">
       <div class="video-wrapper" id="videoWrapper" style="display:none;">
         <video id="video" autoplay playsinline></video>
+        <div class="head-guide"></div> <!-- ✅ Oval guide -->
       </div>
       <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
         <canvas id="canvas"></canvas>
@@ -175,7 +188,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ 4:3 output crop even if live preview is contain
+      // ✅ 4:3 output crop
       const targetAspect = 3 / 4;
       let cropWidth = videoWidth;
       let cropHeight = cropWidth / targetAspect;
@@ -202,7 +215,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Live view contain, capture 4:3 output.");
+      console.log("✅ Contain preview + head guide + 4:3 output.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
