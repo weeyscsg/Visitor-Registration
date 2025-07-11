@@ -57,6 +57,9 @@
       width: 100%;
       border-radius: 8px;
     }
+    #video {
+      transform: scaleX(-1); /* Mirror the live preview */
+    }
     #canvas {
       border: 1px solid #ccc;
     }
@@ -103,6 +106,9 @@
       video.srcObject = stream;
       video.style.display = 'block';
 
+      // Smooth scroll to video preview
+      video.scrollIntoView({ behavior: 'smooth' });
+
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
     }
@@ -137,11 +143,16 @@
       canvas.width = outputWidth;
       canvas.height = outputHeight;
 
+      // Flip back to normal (undo mirror)
+      ctx.save();
+      ctx.translate(outputWidth, 0);
+      ctx.scale(-1, 1);
       ctx.drawImage(
         video,
         cropX, cropY, cropWidth, cropHeight,
         0, 0, outputWidth, outputHeight
       );
+      ctx.restore();
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
