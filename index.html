@@ -58,7 +58,7 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 container aspect */
+      padding-top: 75%; /* 4:3 container shape */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ show full frame, less zoom */
+      object-fit: contain; /* ✅ Full frame preview */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -80,16 +80,14 @@
       border: 1px solid #ccc;
       background: white;
     }
-    /* ✅ Head guide overlay */
-    .video-wrapper .head-guide {
+    /* ✅ SVG overlay guide */
+    .video-wrapper .head-guide-svg {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 50%;
-      height: 65%;
+      height: 80%;
       transform: translate(-50%, -50%);
-      border: 3px dashed rgba(255, 255, 255, 0.8);
-      border-radius: 50% / 60%;
       pointer-events: none;
     }
     #access-denied {
@@ -126,11 +124,31 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- Preview with head guide -->
+    <!-- Preview with SVG head guide -->
     <div class="preview-wrapper">
       <div class="video-wrapper" id="videoWrapper" style="display:none;">
         <video id="video" autoplay playsinline></video>
-        <div class="head-guide"></div> <!-- ✅ Oval guide -->
+        <!-- ✅ SVG Guide -->
+        <svg class="head-guide-svg" viewBox="0 0 200 250" preserveAspectRatio="xMidYMid meet">
+          <path d="
+            M 100 20
+            C 80 20, 60 50, 60 90
+            C 60 130, 80 160, 100 160
+            C 120 160, 140 130, 140 90
+            C 140 50, 120 20, 100 20
+            Z
+            M 60 160
+            C 40 180, 40 210, 60 230
+            L 140 230
+            C 160 210, 160 180, 140 160
+            Z
+          "
+          fill="none"
+          stroke="white"
+          stroke-width="3"
+          stroke-dasharray="8,4"
+          stroke-opacity="0.8"/>
+        </svg>
       </div>
       <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
         <canvas id="canvas"></canvas>
@@ -215,7 +233,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Contain preview + head guide + 4:3 output.");
+      console.log("✅ Contain preview + SVG guide + 4:3 output.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
