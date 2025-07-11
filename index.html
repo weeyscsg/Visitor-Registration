@@ -58,7 +58,7 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* ✅ 4:3 aspect ratio */
+      padding-top: 75%; /* 4:3 box */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
@@ -72,25 +72,13 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: cover;
+      object-fit: contain; /* ✅ show full frame */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
       object-fit: contain;
       border: 1px solid #ccc;
       background: white;
-    }
-    /* ✅ Guide overlay box */
-    .video-wrapper .overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 60%;
-      height: 70%;
-      transform: translate(-50%, -50%);
-      border: 3px dashed rgba(255, 255, 255, 0.8);
-      border-radius: 15px;
-      pointer-events: none;
     }
     #access-denied {
       max-width: 480px;
@@ -112,7 +100,7 @@
     Access Denied. Please scan the valid QR code to open this page.
   </div>
 
-  <!-- Visitor Registration Form Container -->
+  <!-- Visitor Registration Form -->
   <div id="visitor-form" class="container" style="display: none;">
     <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
     <h2>Visitor Registration</h2>
@@ -126,11 +114,10 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- Combined preview wrapper with overlay -->
+    <!-- Preview -->
     <div class="preview-wrapper">
       <div class="video-wrapper" id="videoWrapper" style="display:none;">
         <video id="video" autoplay playsinline></video>
-        <div class="overlay"></div> <!-- ✅ Face guide overlay -->
       </div>
       <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
         <canvas id="canvas"></canvas>
@@ -160,8 +147,8 @@
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: { ideal: 1280, min: 720 },
-          height: { ideal: 720, min: 480 }
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
         }
       });
 
@@ -188,7 +175,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ Crop math for 4:3
+      // ✅ 4:3 output crop even if live preview is contain
       const targetAspect = 3 / 4;
       let cropWidth = videoWidth;
       let cropHeight = cropWidth / targetAspect;
@@ -215,7 +202,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Captured with 4:3 and guide overlay.");
+      console.log("✅ Live view contain, capture 4:3 output.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
