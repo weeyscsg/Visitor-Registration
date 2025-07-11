@@ -52,7 +52,10 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
-    .video-wrapper {
+    .preview-wrapper {
+      width: 100%;
+    }
+    .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
       padding-top: 75%; /* 4:3 aspect ratio */
@@ -60,19 +63,21 @@
       border-radius: 8px;
       margin-top: 15px;
     }
-    .video-wrapper video {
+    .video-wrapper video, .canvas-wrapper canvas {
       position: absolute;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
+      border-radius: 8px;
+    }
+    .video-wrapper video {
       object-fit: cover;
       transform: scaleX(-1);
     }
-    #canvas {
-      margin-top: 15px;
-      width: 100%;
-      border-radius: 8px;
+    .canvas-wrapper canvas {
+      object-fit: contain;
       border: 1px solid #ccc;
+      background: white;
     }
     #access-denied {
       max-width: 480px;
@@ -108,12 +113,15 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <!-- New fixed aspect ratio wrapper -->
-    <div class="video-wrapper" id="videoWrapper" style="display:none;">
-      <video id="video" autoplay playsinline></video>
+    <!-- Combined preview wrapper -->
+    <div class="preview-wrapper">
+      <div class="video-wrapper" id="videoWrapper" style="display:none;">
+        <video id="video" autoplay playsinline></video>
+      </div>
+      <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
+        <canvas id="canvas"></canvas>
+      </div>
     </div>
-
-    <canvas id="canvas" style="display:none;"></canvas>
 
     <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
     <button onclick="submitForm()" id="submitBtn" disabled>🚀 Submit</button>
@@ -121,7 +129,7 @@
 
   <script>
     // ✅ QR Key Check
-    const DAILY_KEY = "digi477188"; // Change daily!
+    const DAILY_KEY = "digi477188"; // Update daily
     const urlParams = new URLSearchParams(window.location.search);
     const key = urlParams.get('key');
 
@@ -146,10 +154,8 @@
       const video = document.getElementById('video');
       video.srcObject = stream;
 
-      // Show wrapper instead of raw video
       document.getElementById('videoWrapper').style.display = 'block';
-
-      document.getElementById('canvas').style.display = 'none';
+      document.getElementById('canvasWrapper').style.display = 'none';
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
 
@@ -196,8 +202,8 @@
 
       console.log("✅ Saved photo normal. Preview is mirrored only.");
 
-      canvas.style.display = 'block';
       document.getElementById('videoWrapper').style.display = 'none';
+      document.getElementById('canvasWrapper').style.display = 'block';
 
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
