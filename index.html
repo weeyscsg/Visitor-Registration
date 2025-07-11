@@ -108,11 +108,13 @@
       video.srcObject = stream;
       video.style.display = 'block';
 
-      // Smooth scroll all the way to bottom of page
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
+
+      // Give layout time to update, then scroll all the way to bottom
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 300);
     }
 
     function capturePhoto() {
@@ -138,7 +140,7 @@
       const cropX = (videoWidth - cropWidth) / 2;
       const cropY = (videoHeight - cropHeight) / 2;
 
-      // Set final output resolution for 300 DPI: 600x800 px
+      // Final output for 300 DPI: 600x800 px
       const outputWidth = 600;
       const outputHeight = 800;
 
