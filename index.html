@@ -136,18 +136,16 @@
         cropWidth = cropHeight * targetAspect;
       }
 
-      // Center the crop area
       const cropX = (videoWidth - cropWidth) / 2;
       const cropY = (videoHeight - cropHeight) / 2;
 
-      // Final output for 300 DPI: 600x800 px
       const outputWidth = 600;
       const outputHeight = 800;
 
       canvas.width = outputWidth;
       canvas.height = outputHeight;
 
-      // Flip back to normal (undo mirror)
+      // ✅ UN-MIRROR: flip back to normal when saving
       ctx.save();
       ctx.translate(outputWidth, 0);
       ctx.scale(-1, 1);
@@ -160,7 +158,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("Captured & cropped to 3:4 portrait:", outputWidth + "x" + outputHeight);
+      console.log("Captured & saved photo: 3:4 portrait, not mirrored.");
 
       canvas.style.display = 'block';
       video.style.display = 'none';
