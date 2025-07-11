@@ -77,15 +77,17 @@
     <input type="email" id="email" placeholder="Email Address" required>
     <textarea id="product" placeholder="Product Interested" rows="3" required></textarea>
 
-    <!-- Camera buttons -->
+    <!-- Start Camera button -->
     <button onclick="startCamera()">📷 Start Camera</button>
-    <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
 
     <!-- Camera preview -->
     <video id="video" autoplay playsinline style="display:none;"></video>
     <canvas id="canvas" style="display:none;"></canvas>
 
-    <!-- Submit button at the bottom -->
+    <!-- Capture Photo button under preview -->
+    <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
+
+    <!-- Submit always last -->
     <button onclick="submitForm()" id="submitBtn" disabled>🚀 Submit</button>
   </div>
 
@@ -106,8 +108,8 @@
       video.srcObject = stream;
       video.style.display = 'block';
 
-      // Smooth scroll to video preview
-      video.scrollIntoView({ behavior: 'smooth' });
+      // Smooth scroll all the way to bottom of page
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
