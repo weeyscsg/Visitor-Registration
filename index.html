@@ -52,15 +52,26 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
-    #video, #canvas {
-      margin-top: 15px;
+    .video-wrapper {
+      position: relative;
       width: 100%;
+      padding-top: 75%; /* 4:3 aspect ratio */
+      overflow: hidden;
       border-radius: 8px;
+      margin-top: 15px;
     }
-    #video {
+    .video-wrapper video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transform: scaleX(-1);
     }
     #canvas {
+      margin-top: 15px;
+      width: 100%;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
     #access-denied {
@@ -97,7 +108,11 @@
 
     <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
 
-    <video id="video" autoplay playsinline style="display:none;"></video>
+    <!-- New fixed aspect ratio wrapper -->
+    <div class="video-wrapper" id="videoWrapper" style="display:none;">
+      <video id="video" autoplay playsinline></video>
+    </div>
+
     <canvas id="canvas" style="display:none;"></canvas>
 
     <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
@@ -106,7 +121,7 @@
 
   <script>
     // ✅ QR Key Check
-    const DAILY_KEY = "digi477188"; // Change this daily!
+    const DAILY_KEY = "digi477188"; // Change daily!
     const urlParams = new URLSearchParams(window.location.search);
     const key = urlParams.get('key');
 
@@ -130,7 +145,9 @@
 
       const video = document.getElementById('video');
       video.srcObject = stream;
-      video.style.display = 'block';
+
+      // Show wrapper instead of raw video
+      document.getElementById('videoWrapper').style.display = 'block';
 
       document.getElementById('canvas').style.display = 'none';
       document.getElementById('captureBtn').style.display = 'block';
@@ -180,7 +197,7 @@
       console.log("✅ Saved photo normal. Preview is mirrored only.");
 
       canvas.style.display = 'block';
-      video.style.display = 'none';
+      document.getElementById('videoWrapper').style.display = 'none';
 
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
