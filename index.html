@@ -58,11 +58,11 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 aspect ratio box stays same */
+      padding-top: 75%; /* keeps container space; real video uses contain */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
-      background: black; /* so you can see letterboxing if any */
+      background: black; /* show letterbox areas */
     }
     .video-wrapper video, .canvas-wrapper canvas {
       position: absolute;
@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ show entire frame */
+      object-fit: contain; /* ✅ full frame, no crop */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -175,22 +175,15 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // No crop! Save full frame to match 'contain'
-      const outputWidth = 600;
-      const outputHeight = 800;
+      // ✅ Use true aspect ratio: save full frame exactly as seen
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
 
-      canvas.width = outputWidth;
-      canvas.height = outputHeight;
-
-      ctx.drawImage(
-        video,
-        0, 0, videoWidth, videoHeight,
-        0, 0, outputWidth, outputHeight
-      );
+      ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Captured full frame to match contain preview.");
+      console.log("✅ Captured with true aspect ratio, no distortion.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
