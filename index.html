@@ -4,6 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visitor Registration</title>
+
+  <!-- ✅ Bulletproof QR Key Check FIRST -->
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const key = urlParams.get('key');
+    const allowedKey = "digi477188"; // ✅ Update this manually when needed
+
+    if (key !== allowedKey) {
+      document.write("<h2 style='text-align:center; color:red;'>❌ Access Denied.<br>Invalid or expired QR code.</h2>");
+      throw new Error("Access Denied: Invalid key");
+    }
+  </script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,25 +71,14 @@
       border-radius: 8px;
     }
     #video {
-      transform: scaleX(-1); /* Mirror live preview */
+      transform: scaleX(-1); /* ✅ Mirror the live preview only */
     }
     #canvas {
       border: 1px solid #ccc;
     }
   </style>
-
-  <!-- ✅ Manual QR key access check -->
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const key = urlParams.get('key');
-    const allowedKey = "digi477188"; // ✅ Update this manually when you want
-
-    if (key !== allowedKey) {
-      document.body.innerHTML = "<h2 style='text-align:center; color:red;'>❌ Access Denied.<br>Invalid or expired QR code.</h2>";
-      throw new Error("Access Denied: Invalid key");
-    }
-  </script>
 </head>
+
 <body>
   <div class="container">
     <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
@@ -129,7 +131,7 @@
       // ✅ Change Start Camera button text to Re-take Photo
       document.getElementById('startBtn').innerText = "🔄 Re-take Photo";
 
-      // Smooth scroll to bottom
+      // Smooth scroll to bottom after layout adjusts
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
@@ -163,7 +165,7 @@
       canvas.width = outputWidth;
       canvas.height = outputHeight;
 
-      // ✅ Do NOT flip — only preview is mirrored
+      // ✅ Do NOT flip — stream is normal, preview is only visually flipped
       ctx.drawImage(
         video,
         cropX, cropY, cropWidth, cropHeight,
