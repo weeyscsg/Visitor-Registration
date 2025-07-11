@@ -58,7 +58,7 @@
       border-radius: 8px;
     }
     #video {
-      transform: scaleX(-1); /* Mirror the live preview */
+      transform: scaleX(-1); /* ✅ Mirror preview only */
     }
     #canvas {
       border: 1px solid #ccc;
@@ -111,7 +111,7 @@
       document.getElementById('captureBtn').style.display = 'block';
       document.getElementById('submitBtn').disabled = true;
 
-      // Give layout time to update, then scroll all the way to bottom
+      // ✅ Scroll to end of page after preview shows
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
@@ -125,7 +125,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // Calculate cropping area for portrait 3:4 ratio
+      // 4:3 portrait crop
       const targetAspect = 3 / 4;
 
       let cropWidth = videoWidth;
@@ -145,20 +145,16 @@
       canvas.width = outputWidth;
       canvas.height = outputHeight;
 
-      // ✅ UN-MIRROR: flip back to normal when saving
-      ctx.save();
-      ctx.translate(outputWidth, 0);
-      ctx.scale(-1, 1);
+      // ✅ NO flip! Save normal — only preview is mirrored
       ctx.drawImage(
         video,
         cropX, cropY, cropWidth, cropHeight,
         0, 0, outputWidth, outputHeight
       );
-      ctx.restore();
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("Captured & saved photo: 3:4 portrait, not mirrored.");
+      console.log("✅ Saved photo: 600x800, normal orientation");
 
       canvas.style.display = 'block';
       video.style.display = 'none';
