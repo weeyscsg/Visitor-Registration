@@ -58,11 +58,11 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* keeps container space; real video uses contain */
+      padding-top: 75%; /* 4:3 container aspect; actual video is true aspect inside */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
-      background: black; /* show letterbox areas */
+      background: black; /* to show letterboxing if any */
     }
     .video-wrapper video, .canvas-wrapper canvas {
       position: absolute;
@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ full frame, no crop */
+      object-fit: contain; /* ✅ show entire sensor feed */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -147,8 +147,8 @@
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: { ideal: 1280, min: 720 },
-          height: { ideal: 720, min: 480 }
+          width: { ideal: 1920 }, // ✅ ask for max width for wider angle
+          height: { ideal: 1080 }
         }
       });
 
@@ -175,7 +175,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // ✅ Use true aspect ratio: save full frame exactly as seen
+      // ✅ Keep true aspect ratio, save full frame
       canvas.width = videoWidth;
       canvas.height = videoHeight;
 
@@ -183,7 +183,7 @@
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Captured with true aspect ratio, no distortion.");
+      console.log("✅ Captured true aspect ratio with max FOV.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
