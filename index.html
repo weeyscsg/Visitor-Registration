@@ -58,10 +58,11 @@
     .video-wrapper, .canvas-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 aspect ratio */
+      padding-top: 75%; /* 4:3 aspect ratio box stays same */
       overflow: hidden;
       border-radius: 8px;
       margin-top: 15px;
+      background: black; /* so you can see letterboxing if any */
     }
     .video-wrapper video, .canvas-wrapper canvas {
       position: absolute;
@@ -71,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: cover;
+      object-fit: contain; /* ✅ show entire frame */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -174,19 +175,7 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      // 📸 Match the 'object-fit: cover' crop
-      const targetAspect = 3 / 4;
-      let cropWidth = videoWidth;
-      let cropHeight = cropWidth / targetAspect;
-
-      if (cropHeight > videoHeight) {
-        cropHeight = videoHeight;
-        cropWidth = cropHeight * targetAspect;
-      }
-
-      const cropX = (videoWidth - cropWidth) / 2;
-      const cropY = (videoHeight - cropHeight) / 2;
-
+      // No crop! Save full frame to match 'contain'
       const outputWidth = 600;
       const outputHeight = 800;
 
@@ -195,13 +184,13 @@
 
       ctx.drawImage(
         video,
-        cropX, cropY, cropWidth, cropHeight, // Match visible preview crop
+        0, 0, videoWidth, videoHeight,
         0, 0, outputWidth, outputHeight
       );
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Captured photo matches live preview exactly.");
+      console.log("✅ Captured full frame to match contain preview.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
