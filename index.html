@@ -72,7 +72,7 @@
       border-radius: 8px;
     }
     .video-wrapper video {
-      object-fit: contain; /* ✅ shows full frame */
+      object-fit: contain; /* ✅ full frame, comfortable */
       transform: scaleX(-1);
     }
     .canvas-wrapper canvas {
@@ -130,7 +130,7 @@
 
   <script>
     // ✅ QR Key Check
-    const DAILY_KEY = "digi477188"; // Update daily!
+    const DAILY_KEY = "EMAX2025"; // Update daily!
     const urlParams = new URLSearchParams(window.location.search);
     const key = urlParams.get('key');
 
@@ -188,7 +188,7 @@
       const cropX = (videoWidth - cropWidth) / 2;
       const cropY = (videoHeight - cropHeight) / 2;
 
-      const outputWidth = 1200;  // ✅ Higher resolution
+      const outputWidth = 1200;  // ✅ High-res output
       const outputHeight = 1600;
 
       canvas.width = outputWidth;
@@ -245,7 +245,11 @@
 
         const result = await response.text();
         alert("Submitted: " + result);
+
+        // ✅ Lock it down after submit!
         document.getElementById("submitBtn").disabled = true;
+        document.getElementById("captureBtn").disabled = true;
+        document.getElementById("startBtn").disabled = true;
 
       } catch (error) {
         alert("Error: " + error.message);
