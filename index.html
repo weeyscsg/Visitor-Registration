@@ -174,33 +174,19 @@
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
 
-      const targetAspect = 3 / 4;
-      let cropWidth = videoWidth;
-      let cropHeight = cropWidth / targetAspect;
-
-      if (cropHeight > videoHeight) {
-        cropHeight = videoHeight;
-        cropWidth = cropHeight * targetAspect;
-      }
-
-      const cropX = (videoWidth - cropWidth) / 2;
-      const cropY = (videoHeight - cropHeight) / 2;
-
-      const outputWidth = 600;
-      const outputHeight = 800;
-
-      canvas.width = outputWidth;
-      canvas.height = outputHeight;
+      // No manual cropping! Capture the full video feed exactly as displayed.
+      canvas.width = 600;  // final output width
+      canvas.height = 800; // final output height to keep 4:3
 
       ctx.drawImage(
         video,
-        cropX, cropY, cropWidth, cropHeight,
-        0, 0, outputWidth, outputHeight
+        0, 0, videoWidth, videoHeight,
+        0, 0, canvas.width, canvas.height
       );
 
       capturedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-      console.log("✅ Saved photo normal. Preview is mirrored only.");
+      console.log("✅ Saved photo normal. Preview is exactly what you see.");
 
       document.getElementById('videoWrapper').style.display = 'none';
       document.getElementById('canvasWrapper').style.display = 'block';
