@@ -4,64 +4,229 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visitor Registration</title>
-  <!-- Optional: Bootstrap for styling -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      max-width: 480px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    img.logo {
+      max-width: 200px;
+      margin-bottom: 15px;
+    }
+    h2 {
+      color: #0099cc;
+      font-size: 1.4em;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background-color: #0099cc;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #video, #canvas {
+      margin-top: 15px;
+      width: 100%;
+      border-radius: 8px;
+    }
+    #video {
+      transform: scaleX(-1);
+    }
+    #canvas {
+      border: 1px solid #ccc;
+    }
+    #access-denied {
+      max-width: 480px;
+      margin: 100px auto;
+      background: #f8d7da;
+      color: #721c24;
+      padding: 20px;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-  <div class="container mt-5">
-    <!-- Access Denied Message -->
-    <div id="access-denied" class="alert alert-danger d-none">
-      Access Denied. Please scan the valid QR code to open this page.
-    </div>
+  <!-- Access Denied Message -->
+  <div id="access-denied">
+    Access Denied. Please scan the valid QR code to open this page.
+  </div>
 
-    <!-- Visitor Registration Form -->
-    <div id="visitor-form" class="card d-none">
-      <div class="card-body">
-        <h2 class="card-title mb-4">Visitor Registration</h2>
-        <form id="registrationForm">
-          <div class="mb-3">
-            <label for="name" class="form-label">Full Name:</label>
-            <input type="text" id="name" name="name" class="form-control" required/>
-          </div>
-          <div class="mb-3">
-            <label for="company" class="form-label">Company:</label>
-            <input type="text" id="company" name="company" class="form-control" required/>
-          </div>
-          <!-- Add more fields as needed -->
+  <!-- Visitor Registration Form Container -->
+  <div id="visitor-form" class="container" style="display: none;">
+    <img src="diginex---cyan-1k.jpg" alt="Diginex Logo" class="logo">
+    <h2>Visitor Registration</h2>
 
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>
-    </div>
+    <input type="text" id="name" placeholder="Visitor Name" required>
+    <input type="text" id="company" placeholder="Company Name" required>
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="text" id="phone" placeholder="Phone Number" required>
+    <input type="email" id="email" placeholder="Email Address" required>
+    <textarea id="product" placeholder="Product Interested" rows="3" required></textarea>
+
+    <button onclick="startCamera()" id="startBtn">📷 Start Camera</button>
+
+    <video id="video" autoplay playsinline style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <button onclick="capturePhoto()" id="captureBtn" style="display:none;">✅ Capture Photo</button>
+    <button onclick="submitForm()" id="submitBtn" disabled>🚀 Submit</button>
   </div>
 
   <script>
-    // 👉 SET your daily key here
-    const DAILY_KEY = "digi477188"; // <-- Update daily!
-
-    // 👉 Get 'key' from URL query parameter
+    // ✅ QR Key Check
+    const DAILY_KEY = "digi477188"; // Change this daily!
     const urlParams = new URLSearchParams(window.location.search);
     const key = urlParams.get('key');
 
-    const formContainer = document.getElementById('visitor-form');
-    const deniedContainer = document.getElementById('access-denied');
-
     if (key === DAILY_KEY) {
-      // Valid key - show form
-      formContainer.classList.remove('d-none');
+      document.getElementById('visitor-form').style.display = 'block';
     } else {
-      // Invalid or missing key - show error
-      deniedContainer.classList.remove('d-none');
+      document.getElementById('access-denied').style.display = 'block';
     }
 
-    // 👉 Handle form submit (example only)
-    document.getElementById('registrationForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Form submitted!'); 
-      // 👉 Replace with your actual Apps Script POST or form submission logic
-    });
-  </script>
+    let stream;
+    let capturedImage = "";
 
+    async function startCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 1280, min: 720 },
+          height: { ideal: 720, min: 480 }
+        }
+      });
+
+      const video = document.getElementById('video');
+      video.srcObject = stream;
+      video.style.display = 'block';
+
+      document.getElementById('canvas').style.display = 'none';
+      document.getElementById('captureBtn').style.display = 'block';
+      document.getElementById('submitBtn').disabled = true;
+
+      document.getElementById('startBtn').innerText = "🔄 Re-take Photo";
+
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 300);
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+
+      const targetAspect = 3 / 4;
+      let cropWidth = videoWidth;
+      let cropHeight = cropWidth / targetAspect;
+
+      if (cropHeight > videoHeight) {
+        cropHeight = videoHeight;
+        cropWidth = cropHeight * targetAspect;
+      }
+
+      const cropX = (videoWidth - cropWidth) / 2;
+      const cropY = (videoHeight - cropHeight) / 2;
+
+      const outputWidth = 600;
+      const outputHeight = 800;
+
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight,
+        0, 0, outputWidth, outputHeight
+      );
+
+      capturedImage = canvas.toDataURL("image/jpeg", 0.9);
+
+      console.log("✅ Saved photo normal. Preview is mirrored only.");
+
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('captureBtn').style.display = 'none';
+    }
+
+    async function submitForm() {
+      const name = document.getElementById("name").value.trim();
+      const company = document.getElementById("company").value.trim();
+      const title = document.getElementById("title").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const product = document.getElementById("product").value.trim();
+
+      if (!name || !company || !title || !phone || !email || !product || !capturedImage) {
+        alert("Please fill all fields and capture a photo.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("company", company);
+      formData.append("title", title);
+      formData.append("phone", phone);
+      formData.append("email", email);
+      formData.append("product", product);
+      formData.append("image", capturedImage);
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwQ9CaLXMG7UuEA-yheERho5w-5L0ZhadoOvuqdaO8BNLBhChuOtWm7V3QumkU5av_6dg/exec", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.text();
+        alert("Submitted: " + result);
+        document.getElementById("submitBtn").disabled = true;
+
+      } catch (error) {
+        alert("Error: " + error.message);
+        console.error(error);
+      }
+    }
+  </script>
 </body>
 </html>
